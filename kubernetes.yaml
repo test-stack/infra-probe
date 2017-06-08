@@ -1,0 +1,67 @@
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: infra-probe
+  labels:
+    component: infra-probe
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: infra-probe
+    spec:
+      serviceAccount: infra-probe
+      containers:
+      - name: infra-probe
+        image: rdpanek/infra-probe:night-build
+        imagePullPolicy: Always
+        env:
+        - name: PROBE_NAME
+          value: "PROBE1"
+        resources:
+          requests:
+            memory: 100Mi
+            cpu: 0.5
+          limits:
+            memory: 400Mi
+            cpu: 1
+        ports:
+        - containerPort: 3014
+          name: server
+          protocol: TCP
+        readinessProbe:
+          httpGet:
+            path: /api/ping
+            port: 3014
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /api/ping
+            port: 3014
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          failureThreshold: 1
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: infra-probe
+  labels:
+    component: infra-probe
+spec:
+  type: NodePort
+  selector:
+    component: infra-probe
+  ports:
+  - name: http
+    port: 3014
+    nodePort: 32698
+    protocol: TCP
+---
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: infra-probe
