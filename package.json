@@ -1,6 +1,6 @@
 {
   "name": "infra-probe",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Probe for check health of infrastructure via Smartmeter",
   "main": "server.js",
   "scripts": {
