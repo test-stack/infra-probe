@@ -1,8 +1,10 @@
 import express from "express";
 import bodyParser from "body-parser";
+import moment from "moment";
 
 const app = express();
 const port = process.env.PORT || 3014;
+const probeName = process.env.PROBE_NAME || "INFRA-PROBE-1";
 
 // Body parser and Morgan middleware
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -24,6 +26,8 @@ app.use("/api", router);
 
 router.route("/ping").get((req, res) => {
   res.json({
+    probeName: probeName,
+    incomingRequestTimeStamp: moment(),
     message: "pong"
   });
 });
